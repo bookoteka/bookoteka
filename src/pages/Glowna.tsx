@@ -1,8 +1,51 @@
 // Strona główna - rout: /
 
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { baza } from "../db/polaczenie";
+import { gatunki, ksiazki, ksiazkiGatunki } from "../db/schemat";
+import { eq } from "drizzle-orm";
+
+interface KsiazkaZGatunkami {
+  id: number;
+  tytul: string | null;
+  autor: string | null;
+  formatKsiazki: string | null;
+  jednotomowka: boolean | null;
+  nazwaSerii: string | null;
+  ocena: string | null;
+  przeczytanoW: string | null;
+  strony: number | null;
+  listaGatunkow: string[];
+}
 
 export default function Glowna() {
+  const [listaKsiazek, setListaKsiazek] = useState<KsiazkaZGatunkami[]>([]);
+  useEffect(() => {
+    async function pobierzDane() {
+      try {
+        const pobraneKsiazki = await baza.select().from(ksiazki);
+
+        const ksiazkiZPelnyDanymi = await Promise.all(
+          pobraneKsiazki.map(async (ksiazka) => {
+            const powiazaneGatunki = await baza
+              .select({ nazwa: gatunki.nazwa })
+              .from(ksiazkiGatunki)
+              .innerJoin(gatunki, eq(ksiazkiGatunki.gatunekId, gatunki.id))
+              .where(eq(ksiazkiGatunki.ksiazkaId, ksiazka.id));
+            return {
+              ...ksiazka,
+              listaGatunkow: powiazaneGatunki.map((g) => g.nazwa),
+            };
+          })
+        );
+        setListaKsiazek(ksiazkiZPelnyDanymi); // tu jest błąd
+      } catch (blad) {
+        console.error("Błąd podczas pobierania książek:", blad);
+      }
+    }
+    pobierzDane();
+  }, []);
   return (
     <div style={{ padding: "1rem"}}>
       <h1 className="text-5xl font-bold text-indigo-900 mb-6">
@@ -106,7 +149,18 @@ export default function Glowna() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {/* Tutaj wylądują wiersze z książkami */}
+              {listaKsiazek.map((ksiazka) => (
+                <tr key={ksiazka.id}>
+                  <td className="py-3.5 px-6 text-slate-600 capitalize">{ksiazka.tytul}</td>
+                  <td className="py-3.5 px-6 text-slate-600">{ksiazka.autor}</td>
+                  <td className="py-3.5 px-6 text-slate-600">{ksiazka.jednotomowka ? "" : ksiazka.nazwaSerii}</td>
+                  <td className="py-3.5 px-6 text-slate-600">{ksiazka.formatKsiazki}</td>
+                  <td className="py-3.5 px-6 text-slate-600">{ksiazka.ocena}</td>
+                  <td className="py-3.5 px-6 text-slate-600">{ksiazka.listaGatunkow.join(", ")}</td>
+                  <td className="py-3.5 px-6 text-slate-600">{ksiazka.strony}</td>
+                  <td className="py-3.5 px-6 text-right space-x-2">{/* tu wstawię link do strony książki */}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

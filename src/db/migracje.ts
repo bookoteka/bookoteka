@@ -49,6 +49,7 @@ export async function zainicjalizujBaze() {
         ('Kryminał'),
         ('Romans'),
         ('Obyczaj'),
+        ('Fanfik'),
         ('Inne');
     `);
   }

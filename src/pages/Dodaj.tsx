@@ -1,11 +1,63 @@
 // Strona dodawania - rout: /dodaj
 
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { baza } from "../db/polaczenie";
+import { ksiazki, ksiazkiGatunki, gatunki } from "../db/schemat";
 
 export default function Dodaj() {
   const [jednotomowka, setJednotomowka] = useState<boolean>(false)
   const [nazwaSerii, setNazwaSerii] = useState<string>('')
+  const [listaGatunkow, setListaGatunkow] = useState<{ id: number; nazwa: string }[]>([]);
+  const [wybraneGatunki, setWybraneGatunki] = useState<number[]>([]);
+  const [bladWalidacji, setBladWalidacji] = useState<string | null>(null);
+  useEffect(() => {
+    async function pobierzGatunki() {
+      try {
+        const wynik = await baza.select().from(gatunki);
+        setListaGatunkow(wynik);
+      } catch (blad) {
+        console.error("Błąd podczas pobierania gatunków z bazy:", blad);
+      }
+    }
+    pobierzGatunki();
+  }, []);
+  const nawigacja = useNavigate();
+  const obsluzZapis = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (wybraneGatunki.length === 0) {
+      setBladWalidacji("Wybierz przynajmniej jeden gatunek!");
+      return;
+    }
+    setBladWalidacji(null);
+    const formularzDane = new FormData(e.currentTarget);
+    try {
+      const wynik = await baza.insert(ksiazki).values({
+        tytul: formularzDane.get("tytul") as string,
+        autor: formularzDane.get("autor") as string,
+        formatKsiazki: formularzDane.get("format_ksiazki") as string,
+        jednotomowka: jednotomowka,
+        nazwaSerii: jednotomowka ? "" : nazwaSerii,
+        ocena: formularzDane.get("ocena") as string,
+        strony: Number(formularzDane.get("strony")),
+        przeczytanoW: new Date().toISOString()
+      }).returning({ id: ksiazki.id });
+
+      const idKsiazki = wynik[0].id;
+
+      if (wybraneGatunki.length > 0) {
+        const rekordyGatunkow = wybraneGatunki.map((idGatunku) => ({
+          ksiazkaId: idKsiazki,
+          gatunekId: idGatunku,
+        }));
+        await baza.insert(ksiazkiGatunki).values(rekordyGatunkow);
+      }
+
+      nawigacja("/");
+    } catch (blad) {
+      console.error("Błąd podczas zapisywania książki:", blad);
+    }
+  };
   return (
     <div className="min-h-screen bg-slate-100 py-8 px-4 overflow-hidden">
       <div className="max-w-2xl mx-auto bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm scale-95 
@@ -14,13 +66,14 @@ export default function Dodaj() {
           Dodaj nową książkę
         </h1>
 
-        <form className="space-y-5">
+        <form className="space-y-5" onSubmit={obsluzZapis}>
           <div>
             <label htmlFor="tytul">Tytuł:</label>
             <br />
             <input
               type="text"
               id="tytul"
+              name="tytul"
               required
               className="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-slate-100 disabled:text-slate-400"
             />
@@ -32,13 +85,14 @@ export default function Dodaj() {
             <input
               type="text"
               id="autor"
+              name="autor"
               required
               className="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-slate-100 disabled:text-slate-400"
             />
           </div>
 
           <div>
-            <input type="checkbox" id="jednotomowka_checkbox" onChange={(e) => {const czyZaznaczone = e.target.checked; setJednotomowka(czyZaznaczone); if (czyZaznaczone) setNazwaSerii("");}}/>
+            <input type="checkbox" id="jednotomowka_checkbox" name="jednotomowka_checkbox" onChange={(e) => {const czyZaznaczone = e.target.checked; setJednotomowka(czyZaznaczone); if (czyZaznaczone) setNazwaSerii("");}}/>
             <label htmlFor="jednotomowka_checkbox">Jednotomówka</label>
           </div>
 
@@ -48,10 +102,12 @@ export default function Dodaj() {
             <input
               type="text"
               id="nazwa_serii_input"
+              name="nazwa_serii_input"
               className={`w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-slate-100 disabled:text-slate-400 ${jednotomowka ? 'cursor-not-allowed' : 'cursor-auto'}`}
               disabled={jednotomowka ? true : false}
               value={nazwaSerii}
               onChange={(e) => setNazwaSerii(e.target.value)}
+              required={jednotomowka ? false : true}
             />
           </div>
 
@@ -61,6 +117,7 @@ export default function Dodaj() {
             <input
               type="number"
               id="strony"
+              name="strony"
               required
               className="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-slate-100 disabled:text-slate-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             />
@@ -72,6 +129,7 @@ export default function Dodaj() {
             <div className="relative">
               <select
                 id="ocena"
+                name="ocena"
                 required
                 defaultValue=""
                 className="w-full appearance-none rounded-lg border border-slate-300 px-3 py-2 pr-8 text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 cursor-pointer text-sm"
@@ -79,9 +137,7 @@ export default function Dodaj() {
                 <option value="" disabled>
                   Wybierz ocenę
                 </option>
-                <option value="1/6 Grand Prix gówna">
-                  1/6 Grand Prix gówna
-                </option>
+                <option value="1/6 Grand Prix gówna">1/6 Grand Prix gówna</option>
                 <option value="2/6 Szkoda drzew">2/6 Szkoda drzew</option>
                 <option value="3/6 Ok">3/6 Ok</option>
                 <option value="4/6 Klasa">4/6 Klasa</option>
@@ -113,6 +169,7 @@ export default function Dodaj() {
             <div className="relative">
               <select
                 id="format_ksiazki"
+                name="format_ksiazki"
                 required
                 defaultValue=""
                 className="w-full appearance-none rounded-lg border border-slate-300 px-3 py-2 pr-8 text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 cursor-pointer text-sm"
@@ -148,28 +205,31 @@ export default function Dodaj() {
 
           <h3 className="font-semibold text-slate-900 mb-3">Gatunki:</h3>
           <div className="flex flex-wrap gap-2.5">
-            {[
-              "Science-fiction",
-              "Fantastyka",
-              "Przygodowa",
-              "Komedia",
-              "Kryminał",
-              "Romans",
-              "Obyczaj",
-              "Inne",
-            ].map((gatunek) => (
+            {listaGatunkow.map((gatunekObiekt) => (
               <label
-                key={gatunek}
+                key={gatunekObiekt.id}
                 className="px-4 py-2.5 rounded-lg border border-slate-300 bg-slate-50 hover:bg-slate-100 cursor-pointer flex items-center gap-2 text-sm text-slate-700 transition-colors has-[:checked]:border-indigo-600 has-[:checked]:bg-indigo-50/50 has-[:checked]:text-indigo-900"
               >
                 <input
                   type="checkbox"
                   className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setWybraneGatunki([...wybraneGatunki, gatunekObiekt.id]);
+                    } else {
+                      setWybraneGatunki(wybraneGatunki.filter((id) => id !== gatunekObiekt.id));
+                    }
+                  }}
                 />
-                <span>{gatunek}</span>
+                <span>{gatunekObiekt.nazwa}</span>
               </label>
             ))}
           </div>
+          {bladWalidacji && (
+            <div className="p-3 bg-red-100 border border-red-300 text-red-700 rounded-lg text-sm">
+              {bladWalidacji}
+            </div>
+          )}
 
           <hr className="border-slate-200 my-4" />
 
