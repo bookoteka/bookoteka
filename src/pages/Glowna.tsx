@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { baza } from "../db/polaczenie";
 import { gatunki, ksiazki, ksiazkiGatunki } from "../db/schemat";
 import { eq } from "drizzle-orm";
+import { Bar, BarChart, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 interface KsiazkaZGatunkami {
   id: number;
@@ -46,6 +47,33 @@ export default function Glowna() {
     }
     pobierzDane();
   }, []);
+
+  const iloscKsiazek = listaKsiazek.length;
+  const sumaStron = listaKsiazek.reduce(
+    (suma, ksiazka) => suma + (ksiazka.strony || 0),
+    0
+  );
+
+  const daneFormatyMap = listaKsiazek.reduce<Record<string, number>>((acc, ksiazka) => {
+    const format = ksiazka.formatKsiazki || "Inny";
+    acc[format] = (acc[format] || 0) + 1;
+    return acc;
+  }, {});
+  const daneFormaty = Object.entries(daneFormatyMap).map(([nazwa, wartosc]) => ({
+    nazwa,
+    wartosc,
+  }));
+  const KOLORY_FORMATOW = ["#6366f1", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981"];
+
+  const daneOcenyMap = listaKsiazek.reduce<Record<string, number>>((acc, ksiazka) => {
+    const ocena = ksiazka.ocena || "Brak";
+    acc[ocena] = (acc[ocena] || 0) + 1;
+    return acc;
+  }, {});
+  const daneOceny = Object.entries(daneOcenyMap)
+    .map(([ocena, ilosc]) => ({ ocena, ilosc }))
+    .sort((a, b) => Number(a.ocena) - Number(b.ocena));
+
   return (
     <div style={{ padding: "1rem"}}>
       <h1 className="text-5xl font-bold text-indigo-900 mb-6">
@@ -58,7 +86,7 @@ export default function Glowna() {
             Przeczytane książki
           </span>
           <span className="text-3xl font-extrabold text-indigo-600">
-            {/* Miejsce na liczbę książek */}
+            {iloscKsiazek}
           </span>
         </div>
 
@@ -67,30 +95,68 @@ export default function Glowna() {
             Suma przeczytanych stron
           </span>
           <span className="text-3xl font-extrabold text-indigo-600">
-            {/* Miejsce na sumę stron */}
-            0
+            {sumaStron.toLocaleString("pl-PL")}
           </span>
         </div>
       </div>
 
-      {/* Wykresy */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col items-center justify-between min-h-[280px]">
           <h3 className="text-base font-semibold text-slate-800 mb-3 text-center">
             Podział według formatów
           </h3>
-          {/* Miejsce na wykres formatów */}
+          <div className="w-full h-52 flex items-center justify-center">
+            {daneFormaty.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={daneFormaty}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={45}
+                    outerRadius={70}
+                    paddingAngle={4}
+                    dataKey="wartosc"
+                    nameKey="nazwa"
+                    label={({ nazwa, wartosc }: any) => `${nazwa}: ${wartosc}`}
+                  >
+                    {daneFormaty.map((_, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={KOLORY_FORMATOW[index % KOLORY_FORMATOW.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <p className="text-slate-400 text-sm italic">Brak danych do wyświetlenia</p>
+            )}
+          </div>
         </div>
 
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col items-center justify-between min-h-[280px]">
           <h3 className="text-base font-semibold text-slate-800 mb-3 text-center">
             Rozkład ocen książek
           </h3>
-          {/* Miejsce na wykres ocen */}
+          <div className="w-full h-52 flex items-center justify-center">
+            {daneOceny.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={daneOceny} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <XAxis dataKey="ocena" stroke="#94a3b8" fontSize={12} />
+                  <YAxis stroke="#94a3b8" fontSize={12} allowDecimals={false} />
+                  <Tooltip />
+                  <Bar dataKey="ilosc" fill="#6366f1" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <p className="text-slate-400 text-sm italic">Brak danych do wyświetlenia</p>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Przyciski akcji */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-3">
           <Link
@@ -102,7 +168,7 @@ export default function Glowna() {
         </div>
 
         <Link
-          to="/podsumowania"
+          to="/raporty"
           className="inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-medium px-4 py-2.5 rounded-lg shadow-sm transition-colors text-sm"
         >
           <svg
@@ -123,14 +189,13 @@ export default function Glowna() {
         </Link>
       </div>
 
-      {/* Książki */}
       <div className="mt-10 bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
           <h2 className="text-xl font-bold text-slate-800">
             Przeczytane książki
           </h2>
           <span className="text-xs font-semibold px-2.5 py-1 bg-indigo-100 text-indigo-800 rounded-full">
-            Łącznie: {/* Miejsce na łączną liczbę */}
+            Łącznie: {iloscKsiazek}
           </span>
         </div>
 

@@ -6,6 +6,7 @@ import { zainicjalizujBaze } from "./db/migracje";
 import Glowna from "./pages/Glowna";
 import Dodaj from "./pages/Dodaj";
 import WidokKsiazki from "./pages/WidokKsiazki";
+import Edytuj from "./pages/Edytuj";
 
 export default function App() {
   useEffect(() => {
@@ -20,6 +21,7 @@ export default function App() {
           <Route path="/" element={<Glowna />} />
           <Route path="/dodaj" element={<Dodaj />} />
           <Route path="/ksiazka/:id" element={<WidokKsiazki />} />
+          <Route path="/ksiazka/:id/edytuj" element={<Edytuj />} />
         </Routes>
       </div>
     </MemoryRouter>

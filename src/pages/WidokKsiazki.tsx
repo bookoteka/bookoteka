@@ -1,7 +1,7 @@
 // Widok książki - rout: /ksiazka/:id
 
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { eq, InferSelectModel } from "drizzle-orm";
 import { gatunki, ksiazki, ksiazkiGatunki } from "../db/schemat";
 import { baza } from "../db/polaczenie";
@@ -14,11 +14,32 @@ const MIESIACE = [
 ];
 
 export default function WidokKsiazki() {
+  const nawigacja = useNavigate();
   const { id } = useParams<{ id: string }>();
 
   const [ksiazka, setKsiazka] = useState<KsiazkaTyp | null>(null);
   const [listaGatunkow, setListaGatunkow] = useState<string[]>([]);
   const [ladowanie, setLadowanie] = useState<boolean>(true);
+
+  const [pokazPotwierdzenie, setPokazPotwierdzenie] = useState<boolean>(false);
+  const usun = async () => {
+    if (!id) return;
+    const idLiczba = Number(id);
+
+    try {
+      await baza
+        .delete(ksiazkiGatunki)
+        .where(eq(ksiazkiGatunki.ksiazkaId, idLiczba));
+
+      await baza
+        .delete(ksiazki)
+        .where(eq(ksiazki.id, idLiczba));
+
+      nawigacja("/");
+    } catch (blad) {
+      console.error("Błąd podczas usuwania książki:", blad);
+    }
+  };
 
   useEffect(() => {
     async function pobierzDane() {
@@ -70,7 +91,6 @@ export default function WidokKsiazki() {
     );
   }
 
-  // Formatowanie daty z pola przeczytanoW
   const dataObiekt = ksiazka.przeczytanoW ? new Date(ksiazka.przeczytanoW) : null;
   const miesiacNazwa = dataObiekt ? MIESIACE[dataObiekt.getMonth()] : "Brak daty";
   const rokCyfra = dataObiekt ? dataObiekt.getFullYear() : "Brak daty";
@@ -173,16 +193,16 @@ export default function WidokKsiazki() {
 
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <button
-              type="button"
+            <Link to={`/ksiazka/${id}/edytuj`}
               className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow-sm transition-colors text-sm"
             >
               Edytuj
-            </button>
+            </Link>
 
             <button
               type="button"
-              className="px-5 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 font-medium rounded-lg border border-red-200 transition-colors text-sm"
+              onClick={() => setPokazPotwierdzenie(true)}
+              className="px-5 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 font-medium rounded-lg border border-red-200 transition-colors text-sm cursor-pointer"
             >
               Usuń
             </button>
@@ -195,6 +215,32 @@ export default function WidokKsiazki() {
             Powrót do listy
           </Link>
         </div>
+        {pokazPotwierdzenie && (
+          <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white p-6 rounded-xl border border-slate-200 max-w-sm w-full shadow-xl">
+              <h3 className="text-lg font-bold text-slate-900 mb-2">Usunąć książkę?</h3>
+              <p className="text-sm text-slate-600 mb-6">
+                Czy na pewno chcesz usunąć tę książkę? Ta operacja jest nieodwracalna.
+              </p>
+              <div className="flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setPokazPotwierdzenie(false)}
+                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg text-sm transition-colors cursor-pointer"
+                >
+                  Anuluj
+                </button>
+                <button
+                  type="button"
+                  onClick={usun}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg text-sm transition-colors cursor-pointer"
+                >
+                  Tak, usuń
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
