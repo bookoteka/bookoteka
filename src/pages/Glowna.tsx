@@ -158,7 +158,7 @@ export default function Glowna() {
                   <td className="py-3.5 px-6 text-slate-600">{ksiazka.ocena}</td>
                   <td className="py-3.5 px-6 text-slate-600">{ksiazka.listaGatunkow.join(", ")}</td>
                   <td className="py-3.5 px-6 text-slate-600">{ksiazka.strony}</td>
-                  <td className="py-3.5 px-6 text-right space-x-2">{/* tu wstawię link do strony książki */}</td>
+                  <td className="py-3.5 px-6 text-right space-x-2"><Link to={`/ksiazka/${ksiazka.id}`} className="text-indigo-600 hover:text-indigo-900 font-medium text-xs">Pokaż</Link></td>
                 </tr>
               ))}
             </tbody>

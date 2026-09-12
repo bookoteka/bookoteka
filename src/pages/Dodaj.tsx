@@ -137,12 +137,12 @@ export default function Dodaj() {
                 <option value="" disabled>
                   Wybierz ocenę
                 </option>
-                <option value="1/6 Grand Prix gówna">1/6 Grand Prix gówna</option>
-                <option value="2/6 Szkoda drzew">2/6 Szkoda drzew</option>
-                <option value="3/6 Ok">3/6 Ok</option>
-                <option value="4/6 Klasa">4/6 Klasa</option>
-                <option value="5/6 Złoto">5/6 Złoto</option>
-                <option value="6/6 Arcydzieło">6/6 Arcydzieło</option>
+                <option value="1/6 ⭐️">1/6 ⭐️</option>
+                <option value="2/6 ⭐️">2/6 ⭐️</option>
+                <option value="3/6 ⭐️">3/6 ⭐️</option>
+                <option value="4/6 ⭐️">4/6 ⭐️</option>
+                <option value="5/6 ⭐️">5/6 ⭐️</option>
+                <option value="6/6 ⭐️">6/6 ⭐️</option>
               </select>
 
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-slate-500">

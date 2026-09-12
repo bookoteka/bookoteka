@@ -1,10 +1,11 @@
 import { MemoryRouter, Routes, Route } from "react-router-dom";
+import { useEffect } from "react";
+import { zainicjalizujBaze } from "./db/migracje";
 
 // Importy stron
 import Glowna from "./pages/Glowna";
 import Dodaj from "./pages/Dodaj";
-import { useEffect } from "react";
-import { zainicjalizujBaze } from "./db/migracje";
+import WidokKsiazki from "./pages/WidokKsiazki";
 
 export default function App() {
   useEffect(() => {
@@ -18,6 +19,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Glowna />} />
           <Route path="/dodaj" element={<Dodaj />} />
+          <Route path="/ksiazka/:id" element={<WidokKsiazki />} />
         </Routes>
       </div>
     </MemoryRouter>
