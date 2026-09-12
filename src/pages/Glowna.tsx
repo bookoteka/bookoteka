@@ -40,7 +40,7 @@ export default function Glowna() {
             };
           })
         );
-        setListaKsiazek(ksiazkiZPelnyDanymi); // tu jest błąd
+        setListaKsiazek(ksiazkiZPelnyDanymi);
       } catch (blad) {
         console.error("Błąd podczas pobierania książek:", blad);
       }

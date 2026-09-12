@@ -7,6 +7,7 @@ import Glowna from "./pages/Glowna";
 import Dodaj from "./pages/Dodaj";
 import WidokKsiazki from "./pages/WidokKsiazki";
 import Edytuj from "./pages/Edytuj";
+import Raporty from "./pages/Raporty";
 
 export default function App() {
   useEffect(() => {
@@ -22,6 +23,7 @@ export default function App() {
           <Route path="/dodaj" element={<Dodaj />} />
           <Route path="/ksiazka/:id" element={<WidokKsiazki />} />
           <Route path="/ksiazka/:id/edytuj" element={<Edytuj />} />
+          <Route path="/raporty" element={<Raporty />} />
         </Routes>
       </div>
     </MemoryRouter>
