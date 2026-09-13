@@ -1,8 +1,28 @@
-import { useState } from "react";
+// Strona główna raportów - rout: /raporty
+
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { pobierzListeRaportow, RaportPlik } from "../scripts/raporty";
 
 export default function Raporty() {
   const [czyModalOtwarty, setCzyModalOtwarty] = useState<boolean>(false);
+  const [raporty, setRaporty] = useState<RaportPlik[]>([]);
+  const [ladowanie, setLadowanie] = useState<boolean>(true);
+
+  useEffect(() => {
+    async function wczytajRaporty() {
+      try {
+        const pliki = await pobierzListeRaportow();
+        setRaporty(pliki);
+      } catch (blad) {
+        console.error("Błąd podczas pobierania raportów:", blad);
+      } finally {
+        setLadowanie(false);
+      }
+    }
+
+    wczytajRaporty();
+  }, []);
 
   return (
     <div className="max-w-5xl mx-auto p-6">
@@ -39,40 +59,49 @@ export default function Raporty() {
         <div className="px-6 py-4 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between">
           <h2 className="font-semibold text-slate-800">Dostępne pliki PDF</h2>
           <span className="text-xs font-medium px-2.5 py-1 bg-slate-200 text-slate-700 rounded-full">
-            Pliki: 0
+            Pliki: {raporty.length}
           </span>
         </div>
 
-        {/* Przykład elementu listy (gdy pliki istnieją) */}
-        <div className="divide-y divide-slate-100 hidden">
-          <div className="px-6 py-4 flex items-center justify-between hover:bg-slate-50/80 transition-colors">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-rose-50 text-rose-600 rounded-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <div>
-                <span className="font-medium text-slate-900 block">raport.pdf</span>
-                <span className="text-xs text-slate-500">Dokument PDF</span>
-              </div>
-            </div>
+        {/* Dynamiczna lista wyrenderowanych plików */}
+        {!ladowanie && raporty.length > 0 && (
+          <div className="divide-y divide-slate-100">
+            {raporty.map((raport) => (
+              <div key={raport.nazwa} className="px-6 py-4 flex items-center justify-between hover:bg-slate-50/80 transition-colors">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-rose-50 text-rose-600 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <span className="font-medium text-slate-900 block">{raport.nazwa}</span>
+                    <span className="text-xs text-slate-500">Dokument PDF</span>
+                  </div>
+                </div>
 
-            <div className="flex items-center gap-3">
-              <Link to="/podsumowania/1" className="text-indigo-600 hover:text-indigo-800 font-medium text-sm transition-colors">
-                Otwórz podgląd &rarr;
-              </Link>
-            </div>
+                <div className="flex items-center gap-3">
+                  <Link 
+                    to={`/raporty/${encodeURIComponent(raport.nazwa)}`} 
+                    className="text-indigo-600 hover:text-indigo-800 font-medium text-sm transition-colors"
+                  >
+                    Otwórz podgląd &rarr;
+                  </Link>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
+        )}
 
         {/* Stan pusty */}
-        <div className="p-12 text-center text-slate-500">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-slate-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          Brak wygenerowanych raportów.
-        </div>
+        {!ladowanie && raporty.length === 0 && (
+          <div className="p-12 text-center text-slate-500">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-slate-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Brak wygenerowanych raportów.
+          </div>
+        )}
       </div>
 
       {/* Modal wyboru daty */}
