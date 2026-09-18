@@ -79,7 +79,6 @@ export default function Glowna() {
       <h1 className="text-5xl font-bold text-indigo-900 mb-6">
         bookoteka
       </h1>
-      <Link to="/tymczasowe">tymczasowe</Link>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">

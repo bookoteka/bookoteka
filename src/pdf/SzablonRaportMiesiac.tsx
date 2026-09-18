@@ -2,7 +2,7 @@
 
 export default function SzablonRaportMiesiac() {
   return (
-    <div className="w-full bg-white text-slate-800 font-sans p-6">
+    <div className="bg-white text-slate-800 font-sans p-6" style={{ width: "794px", minHeight: "1123px" }}>
       {/* Nagłówek */}
       <header className="border-b-2 border-slate-900 pb-3 mb-5 flex justify-between items-end">
         <div>

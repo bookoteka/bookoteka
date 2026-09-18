@@ -1,7 +1,7 @@
 // Obsługa raportów
 
 import { appDataDir, BaseDirectory, join } from '@tauri-apps/api/path';
-import { mkdir, exists, readDir, remove, copyFile } from '@tauri-apps/plugin-fs';
+import { mkdir, exists, readDir, remove, copyFile, writeFile } from '@tauri-apps/plugin-fs';
 import { convertFileSrc } from '@tauri-apps/api/core';
 
 
@@ -62,4 +62,13 @@ export async function pobierzRaportDoPobrane(nazwaPliku: string): Promise<string
   });
 
   return nazwaPliku;
+}
+
+export async function zapiszRaportPdf(nazwaPliku: string, daneZawartosc: Uint8Array): Promise<string> {
+  const folderRaporty = await pobierzFolderRaportow();
+  const pelnaSciezka = await join(folderRaporty, nazwaPliku);
+
+  await writeFile(pelnaSciezka, daneZawartosc);
+
+  return pelnaSciezka;
 }
