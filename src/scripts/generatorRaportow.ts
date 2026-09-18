@@ -1,7 +1,7 @@
 // Generowanie raportów
 
 import { createRoot } from "react-dom/client";
-import html2canvas from "html2canvas";
+import html2canvas from "html2canvas-pro";
 import jsPDF from "jspdf";
 import { zapiszRaportPdf } from "./raporty";
 

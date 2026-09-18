@@ -1,13 +1,23 @@
 // Strona główna raportów - rout: /raporty
 
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect, FormEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { pobierzListeRaportow, RaportPlik } from "../scripts/raporty";
+import { wygenerujRaportPdf } from "../scripts/generatorRaportow";
+import { pobierzDaneMiesiac, pobierzDaneRok } from "../scripts/pobieranieDanychRaportow";
+import SzablonRaportMiesiac from "../pdf/SzablonRaportMiesiac";
+import SzablonRaportRok from "../pdf/SzablonRaportRok";
 
 export default function Raporty() {
+  const navigate = useNavigate();
   const [czyModalOtwarty, setCzyModalOtwarty] = useState<boolean>(false);
   const [raporty, setRaporty] = useState<RaportPlik[]>([]);
   const [ladowanie, setLadowanie] = useState<boolean>(true);
+
+  const [typRaportu, setTypRaportu] = useState<"miesieczne" | "roczne">("miesieczne");
+  const [wybranyMiesiac, setWybranyMiesiac] = useState<number>(new Date().getMonth() + 1);
+  const [wybranyRok, setWybranyRok] = useState<number>(new Date().getFullYear());
+  const [generowanie, setGenerowanie] = useState<boolean>(false);
 
   useEffect(() => {
     async function wczytajRaporty() {
@@ -24,13 +34,62 @@ export default function Raporty() {
     wczytajRaporty();
   }, []);
 
+  const NAZWY_MIESIACY: Record<number, string> = {
+    1: "Styczeń",
+    2: "Luty",
+    3: "Marzec",
+    4: "Kwiecień",
+    5: "Maj",
+    6: "Czerwiec",
+    7: "Lipiec",
+    8: "Sierpień",
+    9: "Wrzesień",
+    10: "Październik",
+    11: "Listopad",
+    12: "Grudzień",
+  };
+
+  const obsluzGenerowanieRaportu = async (zdarzenie: FormEvent) => {
+    zdarzenie.preventDefault();
+    setGenerowanie(true);
+
+    try {
+      let komponentSzablonu: React.ReactNode;
+      let nazwaPliku: string;
+
+      if (typRaportu === "miesieczne") {
+        const dane = await pobierzDaneMiesiac(wybranyRok, wybranyMiesiac);
+        komponentSzablonu = <SzablonRaportMiesiac dane={dane} />;
+        const nazwaMiesiaca = NAZWY_MIESIACY[wybranyMiesiac] || "Miesiąc";
+        nazwaPliku = `${nazwaMiesiaca} ${wybranyRok}.pdf`;
+      } else {
+        const dane = await pobierzDaneRok(wybranyRok);
+        komponentSzablonu = <SzablonRaportRok dane={dane} />;
+        nazwaPliku = `${wybranyRok}.pdf`;
+      }
+
+      await wygenerujRaportPdf(komponentSzablonu, nazwaPliku);
+
+      setCzyModalOtwarty(false);
+
+      const odswiezonaLista = await pobierzListeRaportow();
+      setRaporty(odswiezonaLista);
+
+      navigate(`/raporty/${encodeURIComponent(nazwaPliku)}`);
+    } catch (blad) {
+      console.error("Błąd podczas generowania raportu:", blad);
+    } finally {
+      setGenerowanie(false);
+    }
+  };
+
   return (
     <div className="max-w-5xl mx-auto p-6">
       {/* Nagłówek i przyciski akcji */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-bold text-slate-900">Podsumowania i Raporty</h1>
-          <p className="text-slate-500 text-sm mt-1">Wygenerowane raporty czytelnicze zapisane w systemie.</p>
+          <p className="text-slate-500 text-sm mt-1">Wygenerowane raporty czytelnicze zapisane w aplikacji</p>
         </div>
 
         <div className="flex items-center gap-3">
@@ -121,36 +180,54 @@ export default function Raporty() {
               </button>
             </div>
 
-            <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
+            <form onSubmit={obsluzGenerowanieRaportu} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Typ raportu</label>
-                <select name="typ" id="wybor-typu" className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <select 
+                  name="typ" 
+                  id="wybor-typu" 
+                  value={typRaportu}
+                  onChange={(e) => setTypRaportu(e.target.value as "miesieczne" | "roczne")}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
                   <option value="miesieczne">Miesięczne</option>
                   <option value="roczne">Roczne</option>
                 </select>
               </div>
 
-              <div id="kontener-miesiac">
-                <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Miesiąc</label>
-                <select name="miesiac" className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                  <option value="1">Styczeń</option>
-                  <option value="2">Luty</option>
-                  <option value="3">Marzec</option>
-                  <option value="4">Kwiecień</option>
-                  <option value="5">Maj</option>
-                  <option value="6">Czerwiec</option>
-                  <option value="7">Lipiec</option>
-                  <option value="8">Sierpień</option>
-                  <option value="9">Wrzesień</option>
-                  <option value="10">Październik</option>
-                  <option value="11">Listopad</option>
-                  <option value="12">Grudzień</option>
-                </select>
-              </div>
+              {typRaportu === "miesieczne" && (
+                <div id="kontener-miesiac">
+                  <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Miesiąc</label>
+                  <select 
+                    name="miesiac" 
+                    value={wybranyMiesiac}
+                    onChange={(e) => setWybranyMiesiac(Number(e.target.value))}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  >
+                    <option value="1">Styczeń</option>
+                    <option value="2">Luty</option>
+                    <option value="3">Marzec</option>
+                    <option value="4">Kwiecień</option>
+                    <option value="5">Maj</option>
+                    <option value="6">Czerwiec</option>
+                    <option value="7">Lipiec</option>
+                    <option value="8">Sierpień</option>
+                    <option value="9">Wrzesień</option>
+                    <option value="10">Październik</option>
+                    <option value="11">Listopad</option>
+                    <option value="12">Grudzień</option>
+                  </select>
+                </div>
+              )}
 
               <div>
                 <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Rok</label>
-                <select name="rok" className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <select 
+                  name="rok" 
+                  value={wybranyRok}
+                  onChange={(e) => setWybranyRok(Number(e.target.value))}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
                   <option value="2026">2026</option>
                   <option value="2025">2025</option>
                   <option value="2024">2024</option>
@@ -161,15 +238,17 @@ export default function Raporty() {
                 <button 
                   type="button" 
                   onClick={() => setCzyModalOtwarty(false)}
-                  className="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                  disabled={generowanie}
+                  className="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
                 >
                   Anuluj
                 </button>
                 <button 
                   type="submit" 
-                  className="px-4 py-2 text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm transition-colors cursor-pointer"
+                  disabled={generowanie}
+                  className="px-4 py-2 text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-2"
                 >
-                  Generuj PDF
+                  {generowanie ? "Generowanie..." : "Generuj PDF"}
                 </button>
               </div>
             </form>

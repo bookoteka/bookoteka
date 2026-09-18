@@ -1,10 +1,12 @@
+// Typy dla raportów czytelniczych (PDF / Widok)
+
 export interface KsiazkaRaportu {
   lp: number;
   tytul: string;
   autor: string;
   seria?: string;
   format: string;
-  ocena: number;
+  ocena: string | number;
   gatunki: string;
   miesiac?: string;
   strony: number;
@@ -16,10 +18,15 @@ export interface StatystykiGatunku {
 }
 
 export interface DaneRaportuMiesiac {
-  naglowek: string; // np. "Maj 2026"
+  naglowek: string;
   przeczytaneKsiazki: number;
   przeczytaneStrony: number;
-  formaty: { papier: number; ebook: number; audiobook: number };
+  formaty: { 
+    papier: number; 
+    ebook: number; 
+    audiobook: number; 
+    synchrobook: number 
+  };
   oceny: Record<number, number>;
   gatunki: StatystykiGatunku[];
   ksiazki: KsiazkaRaportu[];

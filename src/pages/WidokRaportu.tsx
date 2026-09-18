@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { pobierzFolderRaportow, pobierzRaportDoPobrane, usunRaport } from "../scripts/raporty";
 import { join } from "@tauri-apps/api/path";
-import { convertFileSrc } from "@tauri-apps/api/core";
+import { readFile } from "@tauri-apps/plugin-fs";
 
 export default function WidokRaportu() {
   const { id } = useParams<{ id: string }>();
@@ -13,6 +13,7 @@ export default function WidokRaportu() {
   const [urlPdf, setUrlPdf] = useState<string>("");
   const [pokazPotwierdzenie, setPokazPotwierdzenie] = useState<boolean>(false);
   const [pobieranie, setPobieranie] = useState<boolean>(false);
+  const [powiadomienie, setPowiadomienie] = useState<string | null>(null);
   const nazwaPliku = id ? decodeURIComponent(id) : "";
 
   useEffect(() => {
@@ -21,7 +22,16 @@ export default function WidokRaportu() {
       try {
         const folder = await pobierzFolderRaportow();
         const sciezka = await join(folder, nazwaPliku);
-        setUrlPdf(convertFileSrc(sciezka));
+      
+        const bajty = await readFile(sciezka);
+        const blob = new Blob([bajty], { type: "application/pdf" });
+        const obiektUrl = URL.createObjectURL(blob);
+        
+        setUrlPdf(obiektUrl);
+
+        return () => {
+          URL.revokeObjectURL(obiektUrl);
+        };
       } catch (blad) {
         console.error("Błąd ładowania podglądu PDF:", blad);
       }
@@ -45,9 +55,15 @@ export default function WidokRaportu() {
     try {
       setPobieranie(true);
       await pobierzRaportDoPobrane(nazwaPliku);
-      alert("Plik został pomyślnie zapisany w folderze Pobrane!");
+      
+      setPowiadomienie(`Zapisano plik "${nazwaPliku}" w folderze Pobrane`);
+      setTimeout(() => {
+        setPowiadomienie(null);
+      }, 4000);
     } catch (blad) {
       console.error("Błąd podczas pobierania pliku:", blad);
+      setPowiadomienie("Wystąpił błąd podczas zapisywania pliku");
+      setTimeout(() => setPowiadomienie(null), 4000);
     } finally {
       setPobieranie(false);
     }
@@ -55,6 +71,25 @@ export default function WidokRaportu() {
 
   return (
     <div className="max-w-6xl mx-auto p-6">
+      {/* Pływające powiadomienie (Toast) */}
+      {powiadomienie && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-slate-900 text-white px-5 py-3.5 rounded-xl shadow-2xl border border-slate-700 transition-all duration-300">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+          </svg>
+          <span className="text-sm font-medium">{powiadomienie}</span>
+          <button 
+            type="button"
+            onClick={() => setPowiadomienie(null)}
+            className="ml-2 text-slate-400 hover:text-white p-0.5 rounded-md transition-colors border-0 bg-transparent cursor-pointer"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      )}
+
       {/* Górny pasek nawigacji i akcji */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
         <div className="flex items-center gap-3">
@@ -73,7 +108,6 @@ export default function WidokRaportu() {
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Przycisk pobierania */}
           <button
             type="button"
             onClick={obsluzPobieranie}
@@ -86,7 +120,6 @@ export default function WidokRaportu() {
             {pobieranie ? "Pobieranie..." : "Pobierz PDF"}
           </button>
 
-          {/* Przycisk otwarcie okna usunięcia PDF */}
           <button
             type="button"
             onClick={() => setPokazPotwierdzenie(true)}
@@ -100,17 +133,17 @@ export default function WidokRaportu() {
         </div>
       </div>
 
-      {/* Kontener z elementem object na plik PDF */}
+      {/* Kontener podglądu iframe z Blob URL */}
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden p-2">
-        <object
-          data={urlPdf}
-          type="application/pdf"
-          className="w-full h-[800px] rounded-lg"
-        >
-          <div className="p-8 text-center text-slate-600">
-            <p className="mb-4">Twoja przeglądarka na tym urządzeniu nie obsługuje bezpośredniego podglądu PDF wewnątrz strony.</p>
-          </div>
-        </object>
+        {urlPdf ? (
+          <iframe
+            src={urlPdf}
+            title="Podgląd PDF"
+            className="w-full h-[800px] rounded-lg border-0"
+          />
+        ) : (
+          <div className="p-12 text-center text-slate-500">Ładowanie podglądu...</div>
+        )}
       </div>
 
       {/* Modal potwierdzenia usunięcia */}
