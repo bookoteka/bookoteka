@@ -8,8 +8,7 @@ export const baza = drizzle(
   async (zapytanie, parametry, metoda) => {
     try {
       if (metoda === "run") {
-        //@ts-ignore
-        const wynik = await bazaTauri.execute(zapytanie, parametry);
+        await bazaTauri.execute(zapytanie, parametry);
         return { rows: [] };
       }
       

@@ -9,6 +9,7 @@ import WidokKsiazki from "./pages/WidokKsiazki";
 import Edytuj from "./pages/Edytuj";
 import Raporty from "./pages/Raporty";
 import WidokRaportu from "./pages/WidokRaportu";
+import Ustawienia from "./pages/Ustawienia";
 
 export default function App() {
   useEffect(() => {
@@ -26,6 +27,7 @@ export default function App() {
           <Route path="/ksiazka/:id/edytuj" element={<Edytuj />} />
           <Route path="/raporty" element={<Raporty />} />
           <Route path="/raporty/:id" element={<WidokRaportu />} />
+          <Route path="/ustawienia" element={<Ustawienia />} />
         </Routes>
       </div>
     </MemoryRouter>
