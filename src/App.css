@@ -1,6 +1,25 @@
 @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');
 @import "tailwindcss";
 
+@theme {
+  --color-primary-50: hsl(var(--p-odcien) 100% 97%);
+  --color-primary-100: hsl(var(--p-odcien) 95% 93%);
+  --color-primary-200: hsl(var(--p-odcien) 90% 84%);
+  --color-primary-300: hsl(var(--p-odcien) 85% 72%);
+  --color-primary-400: hsl(var(--p-odcien) 80% 60%);
+  --color-primary-500: hsl(var(--p-odcien) 75% 50%);
+  --color-primary-600: hsl(var(--p-odcien) 75% 42%);
+  --color-primary-700: hsl(var(--p-odcien) 70% 34%);
+  --color-primary-800: hsl(var(--p-odcien) 65% 26%);
+  --color-primary-900: hsl(var(--p-odcien) 60% 20%);
+  --color-primary-950: hsl(var(--p-odcien) 65% 12%);
+}
+
+:root {
+  /* Domyślnie Indygo */
+  --p-odcien: 239;
+}
+
 * {
     font-family: "Lexend", sans-serif;
     font-optical-sizing: auto;

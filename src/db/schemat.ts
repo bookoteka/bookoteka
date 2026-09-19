@@ -16,7 +16,7 @@ export const ksiazki = sqliteTable("ksiazki", {
 // Słownik gatunków
 export const gatunki = sqliteTable("gatunki", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  nazwa: text("nazwa").notNull(),
+  nazwa: text("nazwa").notNull().unique(),
 });
 
 // Tabela łącząca (relacja wiele-do-wielu)
