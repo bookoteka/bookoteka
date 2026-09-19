@@ -139,7 +139,7 @@ export default function WidokRaportu() {
           <iframe
             src={urlPdf}
             title="Podgląd PDF"
-            className="w-full h-[800px] rounded-lg border-0"
+            className="w-full h-200 rounded-lg border-0"
           />
         ) : (
           <div className="p-12 text-center text-slate-500">Ładowanie podglądu...</div>

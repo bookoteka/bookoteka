@@ -48,7 +48,7 @@ function ImportDanych() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-4xl text-indigo-800">Import danych</h1>
+        <h1 className="text-4xl text-primary-800">Import danych</h1>
         <p className="text-sm text-slate-500 mt-1">
           Wczytaj zewnętrzną kopię zapasową bazy danych SQLite (.db).
         </p>
@@ -75,7 +75,7 @@ function ImportDanych() {
 
       <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col items-start gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-indigo-100 text-indigo-700 rounded-xl">
+          <div className="p-3 bg-indigo-100 text-primary-700 rounded-xl">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
             </svg>
@@ -91,7 +91,7 @@ function ImportDanych() {
         <button
           onClick={obslugaImportu}
           disabled={wgrywanie}
-          className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl transition-colors shadow-sm active:scale-95 disabled:opacity-50 flex items-center gap-2"
+          className="px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-xl transition-colors shadow-sm active:scale-95 disabled:opacity-50 flex items-center gap-2"
         >
           {wgrywanie ? "Importowanie..." : "Wybierz plik bazy (.db)"}
         </button>
@@ -138,7 +138,7 @@ function EksportDanych() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-4xl text-indigo-800">Eksport danych</h1>
+        <h1 className="text-4xl text-primary-800">Eksport danych</h1>
         <p className="text-sm text-slate-500 mt-1">
           Zapisz kopię zapasową bazy danych aplikacji w wybranym miejscu na dysku.
         </p>
@@ -158,7 +158,7 @@ function EksportDanych() {
 
       <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col items-start gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-indigo-100 text-indigo-700 rounded-xl">
+          <div className="p-3 bg-indigo-100 text-primary-700 rounded-xl">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
@@ -172,7 +172,7 @@ function EksportDanych() {
         <button
           onClick={obslugaEksportu}
           disabled={pobieranie}
-          className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl transition-colors shadow-sm active:scale-95 disabled:opacity-50 flex items-center gap-2"
+          className="px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-xl transition-colors shadow-sm active:scale-95 disabled:opacity-50 flex items-center gap-2"
         >
           {pobieranie ? "Eksportowanie..." : "Eksportuj bazy danych"}
         </button>
@@ -319,18 +319,18 @@ function Gatunki() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-4xl text-indigo-800">Gatunki</h1>
+      <h1 className="text-4xl text-primary-800">Gatunki</h1>
       <form onSubmit={obslugaDodawania} className="flex gap-3">
         <input
           type="text"
           value={nowaNazwa}
           onChange={(e) => setNowaNazwa(e.target.value)}
           placeholder="Wpisz nazwę nowego gatunku..."
-          className="flex-1 px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="flex-1 px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
         />
         <button
           type="submit"
-          className="p-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors flex items-center justify-center"
+          className="p-2.5 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors flex items-center justify-center"
           title="Zatwierdź"
         >
           <svg
@@ -362,12 +362,12 @@ function Gatunki() {
         {listaGatunkow.map((gatunek) => (
           <div
             key={gatunek.id}
-            className="flex items-center justify-between px-4 py-2.5 bg-indigo-500 text-white rounded-xl shadow-sm font-medium"
+            className="flex items-center justify-between px-4 py-2.5 bg-primary-500 text-white rounded-xl shadow-sm font-medium"
           >
             <span>{gatunek.nazwa}</span>
             <button
               onClick={() => obslugaUsuwania(gatunek.id, gatunek.nazwa)}
-              className="p-1 hover:bg-indigo-600 rounded-lg transition-colors text-white/90 hover:text-white"
+              className="p-1 hover:bg-primary-600 rounded-lg transition-colors text-white/90 hover:text-white"
               title={`Usuń ${gatunek.nazwa}`}
             >
               <svg
@@ -395,8 +395,8 @@ function Gatunki() {
 function OAplikacji() {
   return (
     <div>
-      <h1 className="text-4xl text-indigo-800">bookoteka</h1>
-      <h2 className="text-lg">Autor: <a href="https://github.com/bookoteka" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">Bookoteka Apps</a> by Karl Evans</h2>
+      <h1 className="text-4xl text-primary-800">bookoteka</h1>
+      <h2 className="text-lg">Autor: <a href="https://github.com/bookoteka" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:underline">Bookoteka Apps</a> by Karl Evans</h2>
       <hr className="my-4 border-slate-200" />
       <h3>Copyright (c) 2026 Karl Evans. Wszelkie prawa zastrzeżone.
         <br/><br/>
@@ -420,7 +420,7 @@ export default function Ustawienia() {
   return (
     <div className="p-8 max-w-5xl mx-auto">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-4xl font-bold text-indigo-900 mb-8">Ustawienia</h1>
+        <h1 className="text-4xl font-bold text-primary-900 mb-8">Ustawienia</h1>
         <Link to="/" className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg shadow-sm hover:bg-slate-50 hover:text-slate-900 transition-colors duration-150">
           <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 fill-current" viewBox="0 0 24 24">
             <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/>
@@ -435,7 +435,7 @@ export default function Ustawienia() {
             onClick={() => setAktywnaZakladka("import")}
             className={`text-left px-4 py-2 rounded-lg text-lg font-medium transition-colors ${
               aktywnaZakladka === "import"
-                ? "bg-indigo-600 text-white"
+                ? "bg-primary-600 text-white"
                 : "text-slate-700 hover:bg-slate-100"
             }`}
           >
@@ -446,7 +446,7 @@ export default function Ustawienia() {
             onClick={() => setAktywnaZakladka("eksport")}
             className={`text-left px-4 py-2 rounded-lg text-lg font-medium transition-colors ${
               aktywnaZakladka === "eksport"
-                ? "bg-indigo-600 text-white"
+                ? "bg-primary-600 text-white"
                 : "text-slate-700 hover:bg-slate-100"
             }`}
           >
@@ -457,7 +457,7 @@ export default function Ustawienia() {
             onClick={() => setAktywnaZakladka("tryb")}
             className={`text-left px-4 py-2 rounded-lg text-lg font-medium transition-colors ${
               aktywnaZakladka === "tryb"
-                ? "bg-indigo-600 text-white"
+                ? "bg-primary-600 text-white"
                 : "text-slate-700 hover:bg-slate-100"
             }`}
           >
@@ -468,7 +468,7 @@ export default function Ustawienia() {
             onClick={() => setAktywnaZakladka("gatunki")}
             className={`text-left px-4 py-2 rounded-lg text-lg font-medium transition-colors ${
               aktywnaZakladka === "gatunki"
-                ? "bg-indigo-600 text-white"
+                ? "bg-primary-600 text-white"
                 : "text-slate-700 hover:bg-slate-100"
             }`}
           >
@@ -479,7 +479,7 @@ export default function Ustawienia() {
             onClick={() => setAktywnaZakladka("o-aplikacji")}
             className={`text-left px-4 py-2 rounded-lg text-lg font-medium transition-colors ${
               aktywnaZakladka === "o-aplikacji"
-                ? "bg-indigo-600 text-white"
+                ? "bg-primary-600 text-white"
                 : "text-slate-700 hover:bg-slate-100"
             }`}
           >

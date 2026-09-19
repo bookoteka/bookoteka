@@ -103,7 +103,7 @@ export default function Raporty() {
           <button 
             type="button" 
             onClick={() => setCzyModalOtwarty(true)}
-            className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2.5 rounded-lg shadow-sm transition-colors text-sm cursor-pointer"
+            className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-medium px-4 py-2.5 rounded-lg shadow-sm transition-colors text-sm cursor-pointer"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
@@ -142,7 +142,7 @@ export default function Raporty() {
                 <div className="flex items-center gap-3">
                   <Link 
                     to={`/raporty/${encodeURIComponent(raport.nazwa)}`} 
-                    className="text-indigo-600 hover:text-indigo-800 font-medium text-sm transition-colors"
+                    className="text-primary-600 hover:text-primary-800 font-medium text-sm transition-colors"
                   >
                     Otwórz podgląd &rarr;
                   </Link>
@@ -188,7 +188,7 @@ export default function Raporty() {
                   id="wybor-typu" 
                   value={typRaportu}
                   onChange={(e) => setTypRaportu(e.target.value as "miesieczne" | "roczne")}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 >
                   <option value="miesieczne">Miesięczne</option>
                   <option value="roczne">Roczne</option>
@@ -202,7 +202,7 @@ export default function Raporty() {
                     name="miesiac" 
                     value={wybranyMiesiac}
                     onChange={(e) => setWybranyMiesiac(Number(e.target.value))}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
                   >
                     <option value="1">Styczeń</option>
                     <option value="2">Luty</option>
@@ -226,7 +226,7 @@ export default function Raporty() {
                   name="rok" 
                   value={wybranyRok}
                   onChange={(e) => setWybranyRok(Number(e.target.value))}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 >
                   <option value="2026">2026</option>
                   <option value="2025">2025</option>
@@ -246,7 +246,7 @@ export default function Raporty() {
                 <button 
                   type="submit" 
                   disabled={generowanie}
-                  className="px-4 py-2 text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-2"
+                  className="px-4 py-2 text-sm font-medium bg-primary-600 hover:bg-primary-700 text-white rounded-lg shadow-sm transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-2"
                 >
                   {generowanie ? "Generowanie..." : "Generuj PDF"}
                 </button>

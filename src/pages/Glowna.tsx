@@ -6,6 +6,7 @@ import { baza } from "../db/polaczenie";
 import { gatunki, ksiazki, ksiazkiGatunki } from "../db/schemat";
 import { eq } from "drizzle-orm";
 import { Bar, BarChart, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { DOSTEPNE_KOLORY } from "../types/kolory";
 
 interface KsiazkaZGatunkami {
   id: number;
@@ -48,6 +49,14 @@ export default function Glowna() {
     pobierzDane();
   }, []);
 
+  const obecnyOdcien = getComputedStyle(document.documentElement)
+    .getPropertyValue("--p-odcien")
+    .trim();
+
+  const aktywnyMotyw =
+    DOSTEPNE_KOLORY.find((k) => k.odcien === obecnyOdcien) ||
+    DOSTEPNE_KOLORY.find((k) => k.id === "indigo")!;
+
   const iloscKsiazek = listaKsiazek.length;
   const sumaStron = listaKsiazek.reduce(
     (suma, ksiazka) => suma + (ksiazka.strony || 0),
@@ -63,7 +72,7 @@ export default function Glowna() {
     nazwa,
     wartosc,
   }));
-  const KOLORY_FORMATOW = ["#6366f1", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981"];
+  const KOLORY_FORMATOW = aktywnyMotyw.koloryWykresu;
 
   const daneOcenyMap = listaKsiazek.reduce<Record<string, number>>((acc, ksiazka) => {
     const ocena = ksiazka.ocena || "Brak";
@@ -77,12 +86,12 @@ export default function Glowna() {
   return (
     <div style={{ padding: "1rem"}}>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-5xl font-bold text-indigo-900">
+        <h1 className="text-5xl font-bold text-primary-900">
           bookoteka
         </h1>
         <Link 
           to="/ustawienia" 
-          className="p-2 text-indigo-900 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors"
+          className="p-2 text-primary-900 hover:text-primary-600 hover:bg-primary-50 rounded-full transition-colors"
           title="Ustawienia"
         >
           <svg 
@@ -112,7 +121,7 @@ export default function Glowna() {
           <span className="text-sm font-medium text-gray-500 uppercase tracking-wider block">
             Przeczytane książki
           </span>
-          <span className="text-3xl font-extrabold text-indigo-600">
+          <span className="text-3xl font-extrabold text-primary-600">
             {iloscKsiazek}
           </span>
         </div>
@@ -121,14 +130,14 @@ export default function Glowna() {
           <span className="text-sm font-medium text-gray-500 uppercase tracking-wider block">
             Suma przeczytanych stron
           </span>
-          <span className="text-3xl font-extrabold text-indigo-600">
+          <span className="text-3xl font-extrabold text-primary-600">
             {sumaStron.toLocaleString("pl-PL")}
           </span>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col items-center justify-between min-h-[280px]">
+        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col items-center justify-between min-h-70">
           <h3 className="text-base font-semibold text-slate-800 mb-3 text-center">
             Podział według formatów
           </h3>
@@ -163,7 +172,7 @@ export default function Glowna() {
           </div>
         </div>
 
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col items-center justify-between min-h-[280px]">
+        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col items-center justify-between min-h-70">
           <h3 className="text-base font-semibold text-slate-800 mb-3 text-center">
             Rozkład ocen książek
           </h3>
@@ -174,7 +183,7 @@ export default function Glowna() {
                   <XAxis dataKey="ocena" stroke="#94a3b8" fontSize={12} />
                   <YAxis stroke="#94a3b8" fontSize={12} allowDecimals={false} />
                   <Tooltip />
-                  <Bar dataKey="ilosc" fill="#6366f1" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="ilosc" fill={aktywnyMotyw.kodHex} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
@@ -188,7 +197,7 @@ export default function Glowna() {
         <div className="flex flex-wrap items-center gap-3">
           <Link
             to="/dodaj"
-            className="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2.5 rounded-lg shadow-sm transition-colors text-sm"
+            className="inline-block bg-primary-600 hover:bg-primary-700 text-white font-medium px-4 py-2.5 rounded-lg shadow-sm transition-colors text-sm"
           >
             Dodaj nową książkę
           </Link>
@@ -221,7 +230,7 @@ export default function Glowna() {
           <h2 className="text-xl font-bold text-slate-800">
             Przeczytane książki
           </h2>
-          <span className="text-xs font-semibold px-2.5 py-1 bg-indigo-100 text-indigo-800 rounded-full">
+          <span className="text-xs font-semibold px-2.5 py-1 bg-indigo-100 text-primary-800 rounded-full">
             Łącznie: {iloscKsiazek}
           </span>
         </div>
@@ -250,7 +259,7 @@ export default function Glowna() {
                   <td className="py-3.5 px-6 text-slate-600">{ksiazka.ocena}</td>
                   <td className="py-3.5 px-6 text-slate-600">{ksiazka.listaGatunkow.join(", ")}</td>
                   <td className="py-3.5 px-6 text-slate-600">{ksiazka.strony}</td>
-                  <td className="py-3.5 px-6 text-right space-x-2"><Link to={`/ksiazka/${ksiazka.id}`} className="text-indigo-600 hover:text-indigo-900 font-medium text-xs">Pokaż</Link></td>
+                  <td className="py-3.5 px-6 text-right space-x-2"><Link to={`/ksiazka/${ksiazka.id}`} className="text-primary-600 hover:text-primary-900 font-medium text-xs">Pokaż</Link></td>
                 </tr>
               ))}
             </tbody>

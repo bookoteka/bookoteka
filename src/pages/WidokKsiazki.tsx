@@ -84,7 +84,7 @@ export default function WidokKsiazki() {
     return (
       <div className="min-h-screen bg-slate-100 flex flex-col items-center justify-center gap-4">
         <p className="text-slate-600 text-lg font-medium">Nie znaleziono takiej książki.</p>
-        <Link to="/" className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium text-sm">
+        <Link to="/" className="px-4 py-2 bg-primary-600 text-white rounded-lg font-medium text-sm">
           Powrót do listy
         </Link>
       </div>
@@ -99,7 +99,7 @@ export default function WidokKsiazki() {
     <div className="min-h-screen bg-slate-100 py-8 px-4">
       <div className="max-w-3xl mx-auto bg-white p-6 sm:p-8 rounded-xl border border-slate-200/80 shadow-sm">
         <div className="border-b border-slate-200 pb-5 mb-6">
-          <h1 className="text-3xl sm:text-4xl font-bold text-indigo-900 mb-2">
+          <h1 className="text-3xl sm:text-4xl font-bold text-primary-900 mb-2">
             {ksiazka.tytul}
           </h1>
           <p className="text-lg font-medium text-slate-600 capitalize">
@@ -134,8 +134,7 @@ export default function WidokKsiazki() {
               Liczba stron
             </span>
             <span className="text-base font-medium text-slate-800">
-              {/* Liczba stron */}
-              350
+              {ksiazka.strony}
             </span>
           </div>
 
@@ -176,7 +175,7 @@ export default function WidokKsiazki() {
                 listaGatunkow.map((gatunek, index) => (
                     <span
                     key={index}
-                    className="px-3 py-1.5 rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-900 text-sm font-medium"
+                    className="px-3 py-1.5 rounded-lg border border-indigo-200 bg-indigo-50 text-primary-900 text-sm font-medium"
                     >
                     {gatunek}
                     </span>
@@ -194,7 +193,7 @@ export default function WidokKsiazki() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <Link to={`/ksiazka/${id}/edytuj`}
-              className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow-sm transition-colors text-sm"
+              className="px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg shadow-sm transition-colors text-sm"
             >
               Edytuj
             </Link>
