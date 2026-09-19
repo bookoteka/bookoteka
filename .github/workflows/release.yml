@@ -1,0 +1,44 @@
+name: Release Tauri App
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+      name: Build and Release
+      strategy:
+        fail-fast: false
+        matrix:
+          platform: [macos-latest, ubuntu-22_04, windows-latest]
+
+      runs-on: ${{ matrix.platform }}
+      
+      steps:
+        - uses: actions/checkout@v4
+
+        - name: Instalacja środowiska Node.js
+          uses: actions/setup-node@v4
+          with:
+            node-version: 20
+
+        - name: Instalacja Bun
+          uses: oven-sh/setup-bun@v1
+
+        - name: Instalacja zależności
+          run: bun install
+
+        - name: Instalacja Rust toolchain
+          uses: dtolnay/rust-toolchain@stable
+
+        - name: Build i publikacja z Tauri Action
+          uses: tauri-apps/tauri-action@v0.5.0
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          with:
+            tagName: app-v__VERSION__
+            releaseName: 'Bookoteka v__VERSION__'
+            releaseBody: 'Automatyczna wersja aplikacji Bookoteka.'
+            releaseDraft: true
+            prerelease: false
