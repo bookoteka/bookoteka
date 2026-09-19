@@ -10,7 +10,6 @@ jobs:
       name: Build and Release
       runs-on: ${{ matrix.platform }}
       
-      # DODAJ TĘ SEKCJĘ:
       permissions:
         contents: write
 
@@ -22,13 +21,13 @@ jobs:
       steps:
         - uses: actions/checkout@v4
 
-        - name: Instalacja środowiska Node.js
-          uses: actions/setup-node@v4
-          with:
-            node-version: 20
-
         - name: Instalacja Bun
           uses: oven-sh/setup-bun@v1
+          with:
+            bun-version: latest
+
+        - name: Instalacja zależności
+          run: bun install
 
         - name: Instalacja Rust toolchain
           uses: dtolnay/rust-toolchain@stable
@@ -39,7 +38,8 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
             tagName: app-v__VERSION__
-            releaseName: 'Bookoteka v__VERSION__'
+            releaseName: 'bookoteka v__VERSION__'
             releaseBody: 'Automatyczna wersja aplikacji bookoteka.'
             releaseDraft: true
             prerelease: false
+            args: --manager bun
