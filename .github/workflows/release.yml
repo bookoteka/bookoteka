@@ -21,13 +21,10 @@ jobs:
       steps:
         - uses: actions/checkout@v4
 
-        - name: Instalacja Bun
-          uses: oven-sh/setup-bun@v1
+        - name: Instalacja Node.js
+          uses: actions/setup-node@v4
           with:
-            bun-version: latest
-
-        - name: Instalacja zależności
-          run: bun install
+            node-version: 20
 
         - name: Instalacja Rust toolchain
           uses: dtolnay/rust-toolchain@stable
@@ -42,4 +39,3 @@ jobs:
             releaseBody: 'Automatyczna wersja aplikacji bookoteka.'
             releaseDraft: true
             prerelease: false
-            args: --manager bun
