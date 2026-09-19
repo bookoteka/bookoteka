@@ -21,6 +21,21 @@ jobs:
       steps:
         - uses: actions/checkout@v4
 
+        - name: Instalacja zależności systemowych (Linux)
+          if: matrix.platform == 'ubuntu-22.04'
+          run: |
+            sudo apt-get update
+            sudo apt-get install -y \
+              libwebkit2gtk-4.0-dev \
+              build-essential \
+              curl \
+              wget \
+              file \
+              libssl-dev \
+              libgtk-3-dev \
+              libayatana-appindicator3-dev \
+              librsvg2-dev
+
         - name: Instalacja Bun
           uses: oven-sh/setup-bun@v1
           with:
