@@ -8,12 +8,16 @@ on:
 jobs:
   publish:
       name: Build and Release
+      runs-on: ${{ matrix.platform }}
+      
+      # DODAJ TĘ SEKCJĘ:
+      permissions:
+        contents: write
+
       strategy:
         fail-fast: false
         matrix:
           platform: [macos-latest, ubuntu-22_04, windows-latest]
-
-      runs-on: ${{ matrix.platform }}
       
       steps:
         - uses: actions/checkout@v4
@@ -26,9 +30,6 @@ jobs:
         - name: Instalacja Bun
           uses: oven-sh/setup-bun@v1
 
-        - name: Instalacja zależności
-          run: bun install
-
         - name: Instalacja Rust toolchain
           uses: dtolnay/rust-toolchain@stable
 
@@ -39,6 +40,6 @@ jobs:
           with:
             tagName: app-v__VERSION__
             releaseName: 'Bookoteka v__VERSION__'
-            releaseBody: 'Automatyczna wersja aplikacji Bookoteka.'
+            releaseBody: 'Automatyczna wersja aplikacji bookoteka.'
             releaseDraft: true
             prerelease: false
