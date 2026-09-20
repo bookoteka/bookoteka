@@ -4,7 +4,14 @@ $repo = "bookoteka/bookoteka"
 Write-Host "🚀 Pobieranie informacji o najnowszej wersji..." -ForegroundColor Cyan
 
 $release = Invoke-RestMethod -Uri "https://api.github.com/repos/$repo/releases/latest"
-$asset = $release.assets \vert{} Where-Object {$_.name -like "*.msi" } | Select-Object -First 1
+
+$asset =$null
+foreach ($a in$release.assets) {
+    if ($a.name.EndsWith(".msi")) {
+        $asset =$a
+        break
+    }
+}
 
 if ($null -eq$asset) {
     Write-Error "Nie znaleziono pliku .msi w najnowszym wydaniu."
