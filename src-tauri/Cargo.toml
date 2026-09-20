@@ -1,7 +1,7 @@
 [package]
 name = "bookoteka"
-version = "0.1.0"
-description = "A Tauri App"
+version = "1.0.0"
+description = "Aplikacja do śledzenia przeczytanych książek"
 authors = ["you"]
 edition = "2021"
 

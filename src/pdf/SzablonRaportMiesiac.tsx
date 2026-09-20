@@ -24,11 +24,11 @@ export default function SzablonRaportMiesiac({ dane }: SzablonRaportMiesiacProps
       <section className="grid grid-cols-2 gap-4 mb-5">
         <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
           <span className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Przeczytane książki</span>
-          <span className="text-3xl font-extrabold text-indigo-600">{dane.przeczytaneKsiazki}</span>
+          <span className="text-3xl font-extrabold text-primary-600">{dane.przeczytaneKsiazki}</span>
         </div>
         <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
           <span className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Przeczytane strony</span>
-          <span className="text-3xl font-extrabold text-indigo-600">{dane.przeczytaneStrony}</span>
+          <span className="text-3xl font-extrabold text-primary-600">{dane.przeczytaneStrony}</span>
         </div>
       </section>
 
@@ -85,7 +85,7 @@ export default function SzablonRaportMiesiac({ dane }: SzablonRaportMiesiacProps
                 dane.gatunki.map((g) => (
                   <tr key={g.gatunek} className="hover:bg-slate-50">
                     <td className="py-1.5 px-3 font-medium text-slate-800">{g.gatunek}</td>
-                    <td className="py-1.5 px-3 text-right font-bold text-indigo-600">{g.liczba}</td>
+                    <td className="py-1.5 px-3 text-right font-bold text-primary-600">{g.liczba}</td>
                   </tr>
                 ))
               ) : (
