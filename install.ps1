@@ -22,7 +22,7 @@ $msiUrl =$asset.browser_download_url
 $outPath = "$env:TEMP\BookotekaSetup.msi"
 
 Write-Host "📥 Pobieranie instalatora z: $msiUrl" -ForegroundColor Cyan
-Invoke-WebRequest $msiUrl$outPath
+(New-Object System.Net.WebClient).DownloadFile($msiUrl,$outPath)
 
 Write-Host "📦 Instalacja aplikacji Bookoteka w tle..." -ForegroundColor Yellow
 Start-Process msiexec.exe -ArgumentList "/i `"$outPath`" /qn /norestart" -Wait
