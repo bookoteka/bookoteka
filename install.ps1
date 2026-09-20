@@ -5,8 +5,13 @@ Write-Host "🚀 Pobieranie informacji o najnowszej wersji..." -ForegroundColor 
 
 $release = Invoke-RestMethod -Uri "https://api.github.com/repos/$repo/releases/latest"
 
-$msiAssets = @($release.assets) \vert{} Where-Object {$_.name.EndsWith(".msi") }
-$asset =$msiAssets[0]
+$asset =$null
+for ($i = 0; $i -lt $release.assets.Count; $i++) {
+    if ($release.assets[$i].name.EndsWith(".msi")) {
+        $asset = $release.assets[$i]
+        break
+    }
+}
 
 if ($null -eq$asset) {
     Write-Error "Nie znaleziono pliku .msi w najnowszym wydaniu."
