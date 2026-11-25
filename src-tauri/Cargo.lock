@@ -338,7 +338,7 @@ dependencies = [
 
 [[package]]
 name = "bookoteka"
-version = "1.0.1"
+version = "1.0.2"
 dependencies = [
  "serde",
  "serde_json",
