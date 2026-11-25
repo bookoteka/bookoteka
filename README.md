@@ -12,23 +12,6 @@ Możesz zainstalować aplikację bezpośrednio przez menedżer pakietów **Homeb
    ```bash
    xattr -d com.apple.quarantine /Applications/Bookoteka.app
    ```
-#### 🌐 Pobranie i instalacja przez Terminal (curl)
-
-Jeśli nie używasz Homebrew, możesz pobrać i zainstalować aplikację jedną komendą:
-
-##### 1. Pobranie i rozpakowanie do /Applications
-```bash
-curl -L -o /tmp/Bookoteka.dmg $(curl -s [https://api.github.com/repos/bookoteka/bookoteka/releases/latest](https://api.github.com/repos/bookoteka/bookoteka/releases/latest) | grep "browser_download_url.*_aarch64.dmg" | cut -d '"' -f 4) && \
-hdiutil attach /tmp/Bookoteka.dmg -mountpoint /tmp/Bookoteka_mount -quiet && \
-cp -R /tmp/Bookoteka_mount/Bookoteka.app /Applications/ && \
-hdiutil detach /tmp/Bookoteka_mount -quiet && \
-rm /tmp/Bookoteka.dmg
-```
-
-##### 2. Zdjecie kwarantanny macOS (Gatekeeper)
-```bash
-xattr -d com.apple.quarantine /Applications/Bookoteka.app
-```
 
 ### 🪟 Windows
 1. Pobierz instalator .msi lub .exe ze strony [repo](https://github.com/bookoteka/bookoteka/releases/latest)

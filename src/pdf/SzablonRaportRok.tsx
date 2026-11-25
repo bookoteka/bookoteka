@@ -113,7 +113,7 @@ export default function SzablonRaportRok({ dane }: SzablonRaportRokProps) {
                 <th className="py-2 px-2.5 font-semibold text-center">Ocena</th>
                 <th className="py-2 px-2.5 font-semibold">Gatunki</th>
                 <th className="py-2 px-2.5 font-semibold text-center">Miesiąc</th>
-                <th className="py-2 px-2.5 font-semibold text-right">Strony</th>
+                <th className="py-2 px-2.5 font-semibold text-center">Strony</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -127,8 +127,8 @@ export default function SzablonRaportRok({ dane }: SzablonRaportRokProps) {
                     <td className="py-1.5 px-2.5 text-slate-600">{k.format}</td>
                     <td className="py-1.5 px-2.5 text-center font-bold text-slate-800">{k.ocena}</td>
                     <td className="py-1.5 px-2.5 text-slate-600">{k.gatunki}</td>
-                    <td className="py-1.5 px-2.5 text-center text-slate-600 font-medium">{k.miesiac || "-"}</td>
-                    <td className="py-1.5 px-2.5 text-right font-medium text-slate-900">{k.strony}</td>
+                    <td className="py-1.5 px-2.5 text-center text-slate-600 font-medium">{k.miesiac ?? "-"}</td>
+                    <td className="py-1.5 px-2.5 text-center font-medium text-slate-900">{k.strony}</td>
                   </tr>
                 ))
               ) : (

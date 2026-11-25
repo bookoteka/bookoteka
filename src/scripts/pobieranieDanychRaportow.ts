@@ -198,8 +198,6 @@ export async function pobierzDaneRok(rok: number): Promise<DaneRaportuRok> {
 
     const dataPrzeczytania = new Date(k.przeczytanoW);
     const numerMiesiaca = dataPrzeczytania.getMonth() + 1;
-    const miesiacNazwa = NAZWY_MIESIACY[numerMiesiaca] || "-";
-
     return {
       lp: indeks + 1,
       tytul: k.tytul,
@@ -208,7 +206,7 @@ export async function pobierzDaneRok(rok: number): Promise<DaneRaportuRok> {
       format: k.format,
       ocena: `${ocenaLiczba}/6 ⭐️`,
       gatunki: k.listaGatunkow.join(", ") || "-",
-      miesiac: miesiacNazwa,
+      miesiac: numerMiesiaca,
       strony: k.strony || 0,
     };
   });

@@ -8,7 +8,7 @@ export interface KsiazkaRaportu {
   format: string;
   ocena: string | number;
   gatunki: string;
-  miesiac?: string;
+  miesiac?: number;
   strony: number;
 }
 

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { baza } from "../db/polaczenie";
 import { gatunki, ksiazki, ksiazkiGatunki } from "../db/schemat";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { Bar, BarChart, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { DOSTEPNE_KOLORY } from "../types/kolory";
 
@@ -26,7 +26,10 @@ export default function Glowna() {
   useEffect(() => {
     async function pobierzDane() {
       try {
-        const pobraneKsiazki = await baza.select().from(ksiazki);
+        const pobraneKsiazki = await baza
+          .select()
+          .from(ksiazki)
+          .orderBy(desc(ksiazki.id));
 
         const ksiazkiZPelnyDanymi = await Promise.all(
           pobraneKsiazki.map(async (ksiazka) => {
